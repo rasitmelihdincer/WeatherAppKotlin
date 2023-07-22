@@ -1,8 +1,10 @@
 package com.example.weatherappkotlin
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences.Editor
 import android.content.pm.PackageManager
 import android.icu.text.SimpleDateFormat
 import android.location.Location
@@ -11,27 +13,60 @@ import android.media.audiofx.Equalizer.Settings
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.example.weatherappkotlin.Models.ModelClass
 import com.example.weatherappkotlin.Utilities.ApiUtilities
+import com.example.weatherappkotlin.Utilities.ApıInterface
 import com.example.weatherappkotlin.databinding.ActivityMainBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Query
 import java.util.Date
 
 class MainActivity : AppCompatActivity() {
     private lateinit var fusedLocationProvideClient : FusedLocationProviderClient
     private lateinit var binding : ActivityMainBinding
+    private lateinit var weather : ModelClass
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         fusedLocationProvideClient = LocationServices.getFusedLocationProviderClient(this)
         getCurrentLocation()
+        binding.searchText.setOnEditorActionListener { v, actionId, keyEvent ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                getCityWeather(binding.searchText.text.toString())
+                val view = this.currentFocus
+                if (view != null) {
+                    val imm : InputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(view.windowToken,0)
+                    binding.searchText.clearFocus()
+                }
+                true
+            } else false
+
+        }
+    }
+
+    private fun getCityWeather(cityName: String) {
+        ApiUtilities.getApiInterface().getCityWeatherData(cityName, API_KEY).enqueue(object : Callback<ModelClass>{
+            override fun onResponse(call: Call<ModelClass>, response: Response<ModelClass>) {
+                setDataOnView(response.body())
+            }
+
+            override fun onFailure(call: Call<ModelClass>, t: Throwable) {
+                println("satır 65")
+            }
+
+        })
     }
 
     private fun getCurrentLocation(){
@@ -44,8 +79,11 @@ class MainActivity : AppCompatActivity() {
                     val location : Location? = task.result
                     if (location == null){
                         Toast.makeText(this,"Null Received",Toast.LENGTH_LONG).show()
+                        println("location null")
                     } else{
                         fetchCurrentLocationWeather(location.latitude.toString(),location.longitude.toString())
+                        println(location.latitude)
+                        println(location.longitude)
                     }
 
                 }
@@ -65,21 +103,28 @@ class MainActivity : AppCompatActivity() {
         ApiUtilities.getApiInterface().getCurrentWeatherData(latitude,longitude, API_KEY).enqueue(object : Callback<ModelClass>{
             override fun onResponse(call: Call<ModelClass>, response: Response<ModelClass>) {
                 if (response.isSuccessful){
-                    setDataOnView(response.body())
+                   setDataOnView(response.body())
                 }
             }
 
             override fun onFailure(call: Call<ModelClass>, t: Throwable) {
-
+                Toast.makeText(this@MainActivity,"ERROR",Toast.LENGTH_LONG).show()
+                println("hata")
             }
 
         })
 
 
+
+
     }
 
     private fun setDataOnView(body: ModelClass?) {
+        val sdf = SimpleDateFormat("dd/mm/yyyy hh:mm")
+        val currentDate = sdf.format(Date())
+        binding.dateTime.text = currentDate
 
+        binding.temp.text = body?.main?.temp.toString()
 
     }
 

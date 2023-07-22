@@ -9,9 +9,10 @@ object ApiUtilities {
     var BASE_URL = "https://api.openweathermap.org/data/2.5/"
 
     fun getApiInterface():ApıInterface{
-        if (retrofit == null){
-            retrofit = Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create()).build()
-        }
+        retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
         return retrofit.create(ApıInterface::class.java)
     }
 

@@ -11,13 +11,13 @@ interface ApıInterface {
     fun getCurrentWeatherData(
         @Query("lat") latitude : String,
         @Query("lot") longitude : String,
-        @Query("ApıKey") apiKey : String,
+        @Query("APPID") apiKey : String,
     ):Call<ModelClass>
 
     @GET("weather")
     fun getCityWeatherData(
         @Query("q") cityName : String,
-        @Query("ApıKey") apiKey : String,
+        @Query("APPID") apiKey : String,
     ):Call<ModelClass>
 
 

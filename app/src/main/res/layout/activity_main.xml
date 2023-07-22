@@ -133,9 +133,11 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="16 C"
+                            android:text="16"
                             android:textColor="@color/white"
-                            android:textSize="50sp"></TextView>
+                            android:textSize="50sp">
+
+                        </TextView>
 
                         <ImageView
                             android:id="@+id/weather_ıcon"
