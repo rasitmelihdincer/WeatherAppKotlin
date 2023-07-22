@@ -1,9 +1,11 @@
 package com.example.weatherappkotlin.Models
 
 import com.google.gson.annotations.SerializedName
+import retrofit2.http.Query
+import retrofit2.http.QueryMap
+import retrofit2.http.QueryName
 
 data class Main (
-
     @SerializedName("temp"       ) var temp      : Double? = null,
     @SerializedName("feels_like" ) var feelsLike : Double? = null,
     @SerializedName("temp_min"   ) var tempMin   : Double? = null,
