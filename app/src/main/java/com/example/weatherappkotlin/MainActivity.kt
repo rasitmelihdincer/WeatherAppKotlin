@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity() {
     }
     companion object {
         private const val PERMISSION_REQUEST_ACCESS_LOCATION = 100
-        private const val API_KEY = "c04ff650f1079fffa038165004ae1653"
+        private const val API_KEY = "Your Apı Key"
     }
 
     override fun onRequestPermissionsResult(
